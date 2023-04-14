@@ -1,22 +1,28 @@
 #!/usr/bin/env node
-import "source-map-support/register";
-import * as cdk from "@aws-cdk/core";
-import { InfrastructureStack } from "../lib/infrastructure-stack";
-import { UsersServiceStack } from "../lib/users-services-stack";
+import * as cdk from 'aws-cdk-lib';
+import 'source-map-support/register';
 
-const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
-const isProd = env.account === "12345678";
+import { ElasticIpStack } from '../lib/elastic-ip-stack.js';
+import { NetworkStack } from '../lib/network-stack.js';
+import { UsersApiStack } from '../lib/users-api-stack.js';
 
 const app = new cdk.App();
 
-const infrastructureStack = new InfrastructureStack(app, "InfrastructureStack", {
-  env,
-  certificateDomain: "*.api.my-domain.com",
-  gatewayDomain: isProd ? "testprod.api.my-domain.com" : "testdev.api.my-domain.com",
+const development = {
+  account: process.env.CDK_DEFAULT_ACCOUNT,
+  region: process.env.CDK_DEFAULT_REGION,
+};
+
+const networkStackDev = new NetworkStack(app, 'NetworkStackDev', {
+  env: development,
 });
 
-const usersServiceStack = new UsersServiceStack(app, "UsersServiceStack", {
-  env,
-  vpc: infrastructureStack.vpc,
-  domainName: infrastructureStack.apiGatewayDomainName,
+new ElasticIpStack(app, 'ElasticIpStackDev', {
+  natInstanceId: '<first-deploy-network - then get id from console>',
+  retainIp: false,
+});
+
+new UsersApiStack(app, 'UsersApiStackDev', {
+  env: development,
+  vpc: networkStackDev.vpc,
 });

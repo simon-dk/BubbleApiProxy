@@ -3,6 +3,10 @@
 Yes, a long title.
 This project is meant to be used as a placeholder to create a lambda-service in a vpc with a static ip.
 
+## Note
+
+AWS has announced a change to its pricing of static ips. From february 2024 each static ip will be priced at $0.005/hour (there can be regional differences, so check pricing). That means at least $3.6/month. For new accounts there is a free tier for 1 ip for the first 12 months. 
+
 ## Usecases
 
 If you have a bubble app that is dependant on an external service or database via a static ip adress, this is not possible today.
